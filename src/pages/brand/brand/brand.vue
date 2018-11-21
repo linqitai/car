@@ -444,6 +444,7 @@ export default {
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
       this.pageSize = val;
+      this.getBrand();
     },
     handleCurrentChange(val) {
       console.log(val);

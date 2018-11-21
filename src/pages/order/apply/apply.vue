@@ -26,7 +26,7 @@
             <span class="nocurrent">首页</span>
           </el-breadcrumb-item>
           <el-breadcrumb-item><span class="nocurrent">预约</span></el-breadcrumb-item>
-          <el-breadcrumb-item><span class="nocurrent">内容管理</span></el-breadcrumb-item>
+          <el-breadcrumb-item><span class="nocurrent">预约管理</span></el-breadcrumb-item>
           <el-breadcrumb-item><span>预约买车</span></el-breadcrumb-item>
         </el-breadcrumb>
       </div>
@@ -89,14 +89,20 @@
         <el-table-column
           prop="car.area"
           label="地区"
-          width="160"
+          width="100"
           show-overflow-tooltip>
         </el-table-column>
         <el-table-column
           prop="car.name"
           label="咨询汽车"
-          width="160"
+          width="100"
           show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column
+          prop="car.status"
+          label="状态"
+          width="100">
+          <template slot-scope="scope"><label :class="[scope.row.status==1?'blue':scope.row.status==2?'green':'']">{{scope.row.status|status}}</label></template>
         </el-table-column>
         <el-table-column
           prop="operate"
@@ -116,7 +122,7 @@
   </div>
 </template>
 <script>
-import { buyCarUrl,ERR_OK } from '@/api/index'
+import { buyCarUrl,buyDeleteUrl,sellDeleteUrl,buySureUrl,ERR_OK } from '@/api/index'
 import { getFullDate } from '@/common/js/utils'
 export default {
   data() {
@@ -149,20 +155,18 @@ export default {
   filters: {
     getDate(t) {
       return getFullDate(t);
+    },
+    status(t) {
+      return t==1?"待处理":t==2?"已处理":t==3?"垃圾篓":"";
     }
   },
   methods: {
     dateChange(value) {
       console.log(value,"-------value-----------")
-      // var timeArr = value.split(',');
-      // var len1 = data.toString().length
-      // var time1 = new Date(value[0]).getTime().toString();
-      // var time2 = new Date(value[1]).getTime().toString();
-      // console.log(`time1:${time1},time2:${time2}`);
       var data1 = new Date(value[0]).getTime().toString();
       var len1 = data1.length
       var time1 = data1.substring(0,len1-3);
-      var data2 = new Date(value[0]).getTime().toString();
+      var data2 = new Date(value[1]).getTime().toString();
       var len2 = data2.length
       var time2 = data2.substring(0,len2-3);
       console.log(`time1:${time1},time2:${time2}`);
@@ -207,22 +211,110 @@ export default {
       this.getBrand();
     },
     handleMoreCommand(command) {
-        console.log(this.multipleSelection,'--multipleSelection--');
-        this.$message('click on item ' + command);
+      var that = this;
+      console.log(this.multipleSelection,'--multipleSelection--');
+      if(command == "deleteMore"){
+        var ids = [];
+        for (var i = this.multipleSelection.length - 1; i >= 0; i--) {
+          ids.push(this.multipleSelection[i].id);
+        }
+        var params = {
+          store_id: that.store_id,
+          buy_id: JSON.stringify(ids)
+        }
+        var url = buyDeleteUrl;
+        console.log(params,"--================params=============--");
+        that.$axios.post(url,params).then((res)=>{
+          var result = res.data;
+          console.log(result.status_code,'--res.status_code--')
+          if(result.status_code == ERR_OK){
+            // that.tableData = result.data;
+            that.$message({
+              type: 'success',
+              message: '删除成功!'
+            });   
+            that.getBrand(); 
+          }
+        }).catch((err)=>{
+          that.$message({
+            type: 'info',
+            message: '系统出错了'
+          });
+        });
+      }else if(command == "affirmMore") {
+        var ids = [];
+        for (var i = this.multipleSelection.length - 1; i >= 0; i--) {
+          ids.push(this.multipleSelection[i].id);
+        }
+        var params = {
+          store_id: that.store_id,
+          buy_id: JSON.stringify(ids)
+        }
+        var url = buySureUrl;
+        console.log(params,'--================params=============--')
+        that.$axios.post(url,params).then((res)=>{
+          var result = res.data;
+          console.log(result.status_code,'--res.status_code--')
+          if(result.status_code == ERR_OK){
+            // that.tableData = result.data;
+            this.$message({
+              type: 'success',
+              message: '确认成功!'
+            });
+            that.getBrand(); 
+          }
+        }).catch((err)=>{
+          that.$message({
+            type: 'info',
+            message: '系统出错了'
+          });
+        });
+      }
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`);
+      this.pageSize = val;
+      this.getBrand();
+    },
+    handleCurrentChange(val) {
+      console.log(val);
+      this.pageIndex = val;
+      this.getBrand();
+    },
     handleAffirmClick(row) {
-      console.log(row.age);
+      var that = this;
       this.$confirm('此操作将确认此条消息, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'info'
       }).then(() => {
-        this.$message({
-          type: 'success',
-          message: '确认成功!'
+        var ids = [];
+        ids.push(row.id);
+        var params = {
+          store_id: that.store_id,
+          buy_id: JSON.stringify(ids)
+        }
+        var url = buySureUrl;
+        console.log(params,'--================params=============--')
+        that.$axios.post(url,params).then((res)=>{
+          var result = res.data;
+          console.log(result.status_code,'--res.status_code--')
+          if(result.status_code == ERR_OK){
+            // that.tableData = result.data;
+            this.$message({
+              type: 'success',
+              message: '确认成功!'
+            });
+            that.getBrand(); 
+          }
+        }).catch((err)=>{
+          that.$message({
+            type: 'info',
+            message: '系统出错了'
+          });
         });
       }).catch(() => {
         this.$message({
@@ -232,31 +324,75 @@ export default {
       });
     },
     handleDeleteClick(row) {
-      console.log(row);
-      this.$confirm('此操作将删除此条消息, 是否继续?', '提示', {
+      var id = row.id;
+      console.log(id,"id")
+      var that = this;
+      that.$confirm('此操作将删除此条数据, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
+        var ids = [];
+        ids.push(id);
+        var params = {
+          store_id: that.store_id,
+          buy_id: JSON.stringify(ids)
+        }
+        var url = buyDeleteUrl;
+        that.$axios.post(url,params).then((res)=>{
+          var result = res.data;
+          console.log(result.status_code,'--res.status_code--')
+          if(result.status_code == ERR_OK){
+            // that.tableData = result.data;
+            that.$message({
+              type: 'success',
+              message: '删除成功!'
+            });   
+            that.getBrand(); 
+          }
+        }).catch((err)=>{
+          that.$message({
+            type: 'info',
+            message: '系统出错了'
+          });
         });
       }).catch(() => {
-        this.$message({
+        that.$message({
           type: 'info',
           message: '已取消删除'
         });          
       });
     },
-    handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
-      this.pageSize = val;
-    },
-    handleCurrentChange(val) {
-      console.log(val);
-      this.pageIndex = val;
-      this.getBrand()
+    deleteData(id){
+      console.log(id,"----------id---------")
+      var ids = [];
+      ids.push(id);
+      console.log(ids,"----------ids---------")
+      var params = {
+        store_id: that.store_id,
+        buy_id: JSON.stringify(ids)
+      }
+      console.log(params,"--================params=============--");
+      console.log(id,"----------id3---------")
+      var url = buyDeleteUrl;
+      console.log(params,"--================params=============--");
+      that.$axios.post(url,params).then((res)=>{
+        var result = res.data;
+        console.log(result.status_code,'--res.status_code--')
+        if(result.status_code == ERR_OK){
+          // that.tableData = result.data;
+          that.$message({
+            type: 'success',
+            message: '删除成功!'
+          });   
+          that.getBrand(); 
+        }
+      }).catch((err)=>{
+        that.$message({
+          type: 'info',
+          message: '系统出错了'
+        });
+      });
     }
   }
 }

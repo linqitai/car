@@ -133,6 +133,7 @@ var menu = [
             {id:0,icon:'icon-actsting',text:'预约',sub:[{icon:'fa-navicon',title:'预约管理',subs:[{id:0,text:'预约买车',path:'/apply'},{id:1,text:'预约卖车',path:'/sell'}]}]},
             {id:1,icon:'icon-actsting',text:'品牌',sub:[{icon:'fa-navicon',title:'品牌管理',subs:[{id:0,text:'品牌列表',path:'/brand'},{id:1,text:'选取品牌',path:'/select'}]}]},
             {id:2,icon:'icon-actsting',text:'车型',sub:[{icon:'fa-navicon',title:'车型管理',subs:[{id:0,text:'车型列表',path:'/commodity'},{id:1,text:'添加车型',path:'/commodityEdit?from=add'}]}]},
+            {id:3,icon:'icon-actsting',text:'门店',sub:[{icon:'fa-navicon',title:'门店管理',subs:[{id:0,text:'门店列表',path:'/store'}]}]},
            ]
 
 export default {
@@ -161,9 +162,9 @@ export default {
   created(){
     this.itemTitleLen = 2;
     this.flex=this.initFlex();
-    var currentLId = this.$cookie.get('currentLId');
+    // var currentLId = this.$cookie.get('currentLId');
     // console.log(currentLText,'--currentLText--')
-    this.setMMenu(currentLId);
+    this.setMMenu(this.currentLId);
     // var currentMText = this.$cookie.get('currentMText');
     // this.setRouter(currentMText);
     console.log(menu,"menu")
@@ -175,7 +176,7 @@ export default {
       this.mSidebar = menu[id].sub;
     },
     setRouter(id) {
-      this.$router.push(menu[this.$cookie.get('currentLId')].sub[0].subs[id].path); 
+      this.$router.push(menu[this.$cookie.get('currentLId')||0].sub[0].subs[id].path); 
     },
     router(text) {
       console.log(text)
@@ -185,7 +186,7 @@ export default {
       this.$cookie.set('currentLId',item.id);
       this.currentMId = 0;
       this.setMMenu(item.id);
-      this.$router.push(menu[this.$cookie.get('currentLId')].sub[0].subs[0].path); 
+      this.$router.push(menu[this.$cookie.get('currentLId')||0].sub[0].subs[0].path); 
       this.$cookie.set('currentMId',0);
     },
     textClick(item) {
@@ -200,7 +201,6 @@ export default {
       for(var i=0; i<this.itemTitleLen; i++) {
         arr[i]=false;
       }
-      // console.log(this.flex,'--this.flex---')
       if(this.flex[index] == true) {
         this.flex = arr; 
       }else{

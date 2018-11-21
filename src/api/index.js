@@ -87,3 +87,27 @@ export const buyCarUrl = host + '/api/caradmin/buy';
 
 // 预约卖车
 export const sellCarUrl = host + '/api/caradmin/sell';
+
+// 删除车型
+export const carDeleteUrl = host + '/api/caradmin/car-delete';
+
+// 删除卖车信息
+export const buyDeleteUrl = host + '/api/caradmin/buy-delete'; 
+
+// 删除卖车信息
+export const sellDeleteUrl = host + '/api/caradmin/sell-delete'; 
+
+// 标记已处理买车信息
+export const buySureUrl = host + '/api/caradmin/buy-sure'; 
+
+// 标记已处理买卖信息
+export const sellSureUrl = host + '/api/caradmin/sell-sure'; 
+
+// 门店列表
+export const shopUrl = host + '/api/caradmin/shop'; 
+
+// 车型是否显示
+export const carIsShowUrl = host + '/api/caradmin/car-isshow'; 
+
+// 车型是否首页
+export const carIsFeatureUrl = host + '/api/caradmin/car-feature'; 

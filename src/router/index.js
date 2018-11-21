@@ -111,28 +111,19 @@ export default new Router({
           }
         },
         {
-          path: '/review',
-          name: 'review',
-          component: (resolve) => {
-            import('../pages/order/review/review').then((module) => {
-              resolve(module)
-            })
-          }
-        },
-        {
-          path: '/complaint',
-          name: 'complaint',
-          component: (resolve) => {
-            import('../pages/order/complaint/complaint').then((module) => {
-              resolve(module)
-            })
-          }
-        },
-        {
           path: '/brand',
           name: '汽车品牌',
           component: (resolve) => {
             import('../pages/brand/brand/brand').then((module) => {
+              resolve(module)
+            })
+          }
+        },
+        {
+          path: '/store',
+          name: '门店列表',
+          component: (resolve) => {
+            import('../pages/store/manage/list').then((module) => {
               resolve(module)
             })
           }

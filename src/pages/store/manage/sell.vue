@@ -26,7 +26,7 @@
             <span class="nocurrent">首页</span>
           </el-breadcrumb-item>
           <el-breadcrumb-item><span class="nocurrent">预约</span></el-breadcrumb-item>
-          <el-breadcrumb-item><span class="nocurrent">预约管理</span></el-breadcrumb-item>
+          <el-breadcrumb-item><span class="nocurrent">内容管理</span></el-breadcrumb-item>
           <el-breadcrumb-item><span>预约卖车</span></el-breadcrumb-item>
         </el-breadcrumb>
       </div>

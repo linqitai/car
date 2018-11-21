@@ -35,6 +35,7 @@
         height: 500px;
         border: 1px solid #DBDBDB;
         background-color: #f4f4f2;
+        overflow: hidden;
         .header{
           padding: 24px 18px;
           color: #A9A8A8;
@@ -46,6 +47,7 @@
         }
         .contentItemsBox{
           padding: 10px 18px;
+          overflow-y: scroll;
           .item{
             margin-top: 6px;
             margin-bottom: 6px;
@@ -112,8 +114,7 @@
             <label class="num">3</label>
           </div>
           <div class="contentItemsBox">
-            <div class="item"><el-checkbox>野马</el-checkbox></div>
-            <div class="item"><el-checkbox>野马</el-checkbox></div>
+            <div class="item" v-for="(item,index) in list"><el-checkbox :data-id="item.id">{{item.name}}</el-checkbox></div>
           </div>
         </div>
         <div class="centerBox">

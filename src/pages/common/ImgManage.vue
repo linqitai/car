@@ -156,7 +156,7 @@ $marignLen:14px;
           </ul>
           <ul class="tree">
             <div class="treeTitle" @click="groupClick(0,'所有图片')" :class="{currentTitle:0==currentNodeId}">所有图片</div>
-            <li v-for="(item,index) in treeData" @click="groupClick(item.id,item.name)" :class="{currentTree:item.id==currentNodeId}">{{item.name}}</li>
+            <li v-for="(item,index) in treeData" :key="index" @click="groupClick(item.id,item.name)" :class="{currentTree:item.id==currentNodeId}">{{item.name}}</li>
           </ul>
       </div>
       <div class="bodyRight">

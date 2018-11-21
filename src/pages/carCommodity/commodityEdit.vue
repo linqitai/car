@@ -110,10 +110,11 @@ $marignLen:14px;
   border-radius:10px;
   -moz-box-shadow:2px 2px 5px #333333; -webkit-box-shadow:2px 2px 5px #333333; box-shadow:2px 2px 5px #333333;
   .border{
-    border: 1px solid #c81111 !important;
+    border-color:#c81111 !important;
   }
+
   .borderNo{
-    border: 1px dashed #ccc !important;
+    border-color: transparent !important;
   }
   i.el-icon-circle-close{
     position: absolute;
@@ -229,7 +230,7 @@ $marignLen:14px;
       }
       .upload-imgs{font-size: 0; overflow: hidden;clear: both;padding-top: 12px;height: 490px;
         li{position: relative;width: 118px;height: 118px;font-size: 14px;display: inline-block;padding: 1px;margin-right: 5px;text-align: center;vertical-align: middle;
-          margin-bottom: 3px;margin-right: 3px;
+          margin-bottom: 3px;margin-right: 3px;border: 1px solid transparent;
           &:hover{border-color: #c7c7c7;
           }
         }
@@ -275,7 +276,7 @@ $marignLen:14px;
           </ul>
           <ul class="tree">
             <div class="treeTitle" @click="groupClick(0,'所有图片')" :class="{currentTitle:0==currentNodeId}">所有图片</div>
-            <li v-for="(item,index) in treeData" @click="groupClick(item.id,item.name)" :class="{currentTree:item.id==currentNodeId}">{{item.name}}</li>
+            <li v-for="(item,index) in treeData" :key="index" @click="groupClick(item.id,item.name)" :class="{currentTree:item.id==currentNodeId}">{{item.name}}</li>
           </ul>
         </div>
         <div class="bodyRight">
@@ -297,7 +298,7 @@ $marignLen:14px;
                   <input type="file" class="upload" name="pic" @change="inputChange($event)" accept="image/*"/>
                   <a class="add"><i class="iconfont icon-plus"></i><p>点击上传</p></a>
                 </li>
-                <li v-for="(item,index) in imgs" :key="index">
+                <li v-for="(item,index) in imgs" :key="index" class="picBorder" :data-index="index"><!-- :class="{'borderNo':item.checked==0}" -->
                   <p class="img">
                     <img data-select='0' @click="selectImg($event,item.id,index)" :src="item.url" height="118">
                   </p>
@@ -1106,6 +1107,13 @@ export default {
     },
     showImgManage(text){
       this.inputText = text;
+      var li = document.getElementsByClassName('picBorder')
+      console.log(li.length,"picBorder");
+      // 重新打开imgManage的时候，所有图片取消被选中状态
+      for(var i=0;i<li.length;i++){
+        $(li[i]).removeClass("border");
+        this.imgs[i].checked = 0;
+      }
       this.isShowImgManage = true;
     },
     getCarInfo(){
@@ -1194,144 +1202,6 @@ export default {
       ids=[];
       that.imgArr=[];
     },
-    // inputChange4detail(e,active){
-    //   this.$cookie.set('active',active)
-    //   let that = this;
-    //   var file = e.target.files[0]
-    //   let params = new FormData()
-    //   params.append('file', file)
-    //   params.append('store_id', that.store_id)
-    //   params.append('group_id', that.group_id||0)
-    //   var url = uploadUrl;
-    //   $.ajax({ 
-    //     url : url, 
-    //     type : 'POST', 
-    //     data : params, 
-    //     cache:false,
-    //     // 告诉jQuery不要去处理发送的数据
-    //     processData : false, 
-    //     // 告诉jQuery不要去设置Content-Type请求头
-    //     contentType : false,
-    //     beforeSend: function (XMLHttpRequest) {
-    //       XMLHttpRequest.setRequestHeader("authorization", localStorage.getItem('authorization'));
-    //       that.progressDialog = true;
-    //     },
-    //     complete: function( xhr,data ){
-    //       that.percentage = 10;
-    //       setTimeout(function() {
-    //         that.percentage = 30;
-    //       }, 100)
-    //       setTimeout(function() {
-    //         that.percentage = 50;
-    //       }, 150)
-    //       setTimeout(function() {
-    //         that.percentage = 70;
-    //       }, 200)
-    //       setTimeout(function() {
-    //         that.progressDialog = false;
-    //         that.percentage = 100;
-    //       }, 220)
-    //     },
-    //     success : function(res) { 
-    //       if(res.status_code===ERR_OK){
-    //         that.imgs.unshift(res.data[0]);
-    //         ids.unshift(res.data[0].id);
-    //         console.log("成功");
-    //         that.form.image_ids = ids.join(',');
-    //       }else{
-    //         that.$notify.error({
-    //           title: '错误',
-    //           message: '不支持上传此格式的照片'
-    //         });
-    //       }
-    //     },
-    //     error : function(responseStr) { 
-    //       that.progressDialog = false;
-    //       console.log(responseStr);
-    //       console.log(responseStr.statusText)
-    //       if(responseStr.status == 500) {
-    //         that.$notify.error({
-    //           title: '错误',
-    //           message: '登录超时，请重新登录'
-    //         });
-    //         that.$router.push({
-    //           path: '/login'
-    //         })
-    //       } else if(responseStr.statusText == 'error'){
-    //         that.$notify.error({
-    //           title: '错误',
-    //           message: '不支持上传此格式的照片'
-    //         });
-    //       }
-    //     } 
-    //   });
-    // },
-    // inputChange(e) {
-    //   let that = this;
-    //   var file = e.target.files[0]
-    //   let params = new FormData()
-    //   params.append('file', file)
-    //   params.append('store_id', that.store_id)
-    //   params.append('group_id', that.group_id||0)
-    //   var url = uploadUrl;
-    //   $.ajax({ 
-    //     url : url, 
-    //     type : 'POST', 
-    //     data : params, 
-    //     cache:false,
-    //     // 告诉jQuery不要去处理发送的数据
-    //     processData : false, 
-    //     // 告诉jQuery不要去设置Content-Type请求头
-    //     contentType : false,
-    //     beforeSend: function (XMLHttpRequest) {
-    //       XMLHttpRequest.setRequestHeader("authorization", localStorage.getItem('authorization'));
-    //       that.progressDialog = true;
-    //     },
-    //     complete: function( xhr,data ){
-    //       that.percentage = 10;
-    //       setTimeout(function() {
-    //         that.percentage = 30;
-    //       }, 100)
-    //       setTimeout(function() {
-    //         that.percentage = 50;
-    //       }, 150)
-    //       setTimeout(function() {
-    //         that.percentage = 70;
-    //       }, 200)
-    //       setTimeout(function() {
-    //         that.progressDialog = false;
-    //         that.percentage = 100;
-    //       }, 220)
-    //     },
-    //     success : function(res) { 
-    //       if(res.status_code===ERR_OK){
-    //         console.log("成功");
-    //         that.form.img_url = res.data[0].url;
-    //       }else{
-    //         console.log("失败");
-    //       }
-    //     },
-    //     error : function(responseStr) { 
-    //       that.progressDialog = false;
-    //       console.log(responseStr);
-    //       console.log(responseStr.statusText)
-    //       if(responseStr.status == 500) {
-    //         that.$notify.error({
-    //           title: '错误',
-    //           message: '登录超时，请重新登录'
-    //         });
-    //         that.$router.push({
-    //           path: '/login'
-    //         })
-    //       } else if(responseStr.statusText == 'error'){
-    //         that.$notify.error({
-    //           title: '错误',
-    //           message: '不支持上传此格式的照片'
-    //         });
-    //       }
-    //     } 
-    //   });
-    // },
     spotChange(value){
       this.spot_ids = value
       console.log(this.form.spot_ids,"===this.form.spot_ids===")
@@ -1481,8 +1351,6 @@ export default {
       this.$cookie.set('active',4)
       let that = this;
       this.form.store_id = this.store_id;
-      // params.buy_time = this.form.buy_time;
-      // params.plate_time = this.form.plate_time;
       this.form.attr_ids.push(this.form.pailiang);
       this.form.attr_ids.push(this.form.color);
       this.form.attr_ids.push(this.form.chexing);
