@@ -67,7 +67,9 @@ export default {
     manage(){
       // localStorage.setItem('_lSidebar','manage');
       // this.$emit('childToParentEvent', 'manage')
+      this.$cookie.set('currentLId',0);
       this.$router.push('/apply');
+      // window.location.reload()
     },
     setting() {
       // localStorage.setItem('_lSidebar','setting');

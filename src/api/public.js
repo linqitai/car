@@ -10,18 +10,7 @@ axios.defaults.timeout = 5000
 // axios.defaults.headers.post['Content-Type'] = 'application/json'
 // axios.defaults.headers.post['Content-Type'] = 'application/x-www=form-urlencoded'
 // axios.interceptors.response.setHeader("Access-Control-Allow-Origin", "*");
-// // POST传参序列化 
-// axios.interceptors.request.use((config) => {
-//   console.log(config)
-//   if (config.method === 'post') {
-//     config.data = qs.stringify(config.data)
-//   }
-//   return config
-// }, (error) => {
-//   // _.toast("错误的传参", 'fail');
-//   return Promise.reject(error)
-// })
-// 返回状态判断
+
 // 添加一个响应拦截器
 axios.interceptors.response.use(function (res) {
   return res;

@@ -30,6 +30,7 @@ module.exports = {
       'api': resolve('src/api')
     }
   },
+  externals: { 'AMap': 'AMap' },
   plugins: [
     new webpack.ProvidePlugin({
       $:"jquery",
@@ -83,5 +84,12 @@ module.exports = {
         }
       }
     ]
-  }
+  },
+//   node: {
+//     externals: {
+// 　　　　　　'AMap': 'AMap',
+// 　　　　　　'Loca': 'Loca',
+// 　　　　　　'AMapUI': 'AMapUI'
+// 　　　　}
+//   }
 }

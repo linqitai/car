@@ -37,7 +37,7 @@
           prop="id"
           label="id"
           sortable
-          width="120">
+          width="80">
         </el-table-column>
         <el-table-column
           prop="name"
@@ -55,6 +55,17 @@
           label="地址"
           width="200"
           show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column prop="default" label="是否默认" width="100">
+          <template slot-scope="scope">
+            {{scope.row.is_default | getIs_defaultBoolean}}
+            <el-switch
+              v-model="scope.row.is_default"
+              active-color="#409EFF"
+              inactive-color="#c7c7c7"
+              @change="is_defaultChange($event,scope.row.id)">
+            </el-switch>
+          </template>
         </el-table-column>
         <el-table-column
           prop="img_url"
@@ -76,7 +87,7 @@
           prop="operate"
           label="操作">
           <template slot-scope="scope">
-            <el-button @click="handleAffirmClick(scope.row)" type="text" size="small" icon="el-icon-check">详情</el-button>
+            <el-button @click="handleEditClick(scope.row)" type="text" size="small" icon="el-icon-check">编辑</el-button>
             <el-button @click="handleDeleteClick(scope.row)" type="text" size="small" icon="el-icon-close">删除</el-button>
           </template>
         </el-table-column>
@@ -90,7 +101,7 @@
   </div>
 </template>
 <script>
-import { shopUrl,buyDeleteUrl,sellDeleteUrl,buySureUrl,ERR_OK } from '@/api/index'
+import { shopUrl,buyDeleteUrl,sellDeleteUrl,buySureUrl,shopDeleteEdiUrl,shopDefaultEdiUrl,ERR_OK } from '@/api/index'
 import { getFullDate } from '@/common/js/utils'
 export default {
   data() {
@@ -98,7 +109,7 @@ export default {
       pageIndex: 1,
       pageSize: 8,
       total: 0,
-      showPageTag: true,
+      showPageTag: false,
       hisTime:'',
       time: [],
       statusOptions: [{
@@ -118,7 +129,7 @@ export default {
     }
   },
   created() {
-    this.getBrand();
+    this.getList();
   },
   filters: {
     getDate(t) {
@@ -126,15 +137,89 @@ export default {
     },
     status(t) {
       return t==1?"待处理":t==2?"已处理":t==3?"垃圾篓":"";
+    },
+    getIs_defaultBoolean(value){
+      var is_default = value;
+      return (is_default == 1 || is_default == true) ?  '是' :'否'
     }
   },
   methods: {
+    is_defaultChange(value,id){
+      console.log(value,'--value--')
+      console.log(id,'--id--')
+      let that = this;
+      var ids = []
+      ids.push(id)
+      var params = {
+        store_id: that.store_id,
+        shop_id: id,
+        is_default: value?0:1
+      }
+      var url = shopDefaultEdiUrl;
+      console.log(params,'--params--')
+      that.$axios.post(url,params).then((res)=>{
+        var result = res.data;
+        console.log(result.status_code,'--res.status_code--')
+        if(result.status_code == ERR_OK){
+          console.log(result)
+        }
+      }).catch((err)=>{
+        that.$message({
+          type: 'info',
+          message: '系统出错了'
+        }); 
+      });
+    },
+    handleDeleteClick(row){
+      let that = this;
+      this.$confirm('此操作将删除此条数据, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        var params = {
+          store_id: that.store_id,
+          shop_id: row.id
+        }
+        var url = shopDeleteEdiUrl;
+        console.log(params,'--params--')
+        that.$axios.post(url,params).then((res)=>{
+          var result = res.data;
+          console.log(result.status_code,'--res.status_code--')
+          if(result.status_code == ERR_OK){
+            // that.tableData = result.data;
+            that.getList();
+            that.$message({
+              type: 'success',
+              message: '删除成功!'
+            });    
+          }
+        }).catch((err)=>{
+          that.$message({
+            type: 'info',
+            message: '系统出错了'
+          });
+        });
+        
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });          
+      });
+    },
+    handleEditClick(row) {
+      var shopId = row.id;
+      console.log(shopId,"shopId")
+      this.$cookie.set("_shopId",shopId)
+      this.$router.push('/storeEdit')
+    },
     statusChange(value){
       console.log(value,"----statusChange-------")
       this.statusId = value;
-      this.getBrand();
+      this.getList();
     },
-    getBrand() {
+    getList() {
       let that = this;
       var params = {
         store_id: this.store_id,
@@ -149,26 +234,23 @@ export default {
         if(result.status_code == ERR_OK){
           that.tableData = result.data;
           console.log(that.tableData,"that.tableData ")
+          for(var i=0;i<that.tableData.length;i++){
+            if(that.tableData[i].is_default==1){
+              that.tableData[i].is_default = true
+            }
+          }
           // that.total = result.count;
           // if(that.total<that.pageSize) {
           //   that.showPageTag = false;
           // }
         }
-        // that.tableData = result;
-        // that.total = res.data.data.count;
-        // console.log(that.total)
-        // if(that.total<that.pageSize) {
-        //   that.showPageTag = false;
-        // }else{
-        //   that.showPageTag = true;
-        // }
       }).catch((err)=>{
         console.info(err);
       });
     },
     clickSure() {
       console.log((this.time),"--time--");
-      this.getBrand();
+      this.getList();
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
@@ -176,12 +258,12 @@ export default {
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
       this.pageSize = val;
-      this.getBrand();
+      this.getList();
     },
     handleCurrentChange(val) {
       console.log(val);
       this.pageIndex = val;
-      this.getBrand();
+      this.getList();
     }
   }
 }

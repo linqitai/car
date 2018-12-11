@@ -33,7 +33,7 @@
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item command="allOpen">批量开启</el-dropdown-item>
                 <el-dropdown-item command="allHot">批量热门</el-dropdown-item>
-                <el-dropdown-item command="allSold">批量出售</el-dropdown-item>
+                <!-- <el-dropdown-item command="allSold">批量已出售</el-dropdown-item> -->
               </el-dropdown-menu>
             </el-dropdown>
           </div>
@@ -199,9 +199,6 @@
           <template slot-scope="scope">
             <el-button @click="edit(scope.row)" type="text" size="small" icon="el-icon-check">编辑</el-button>
             <el-button @click="handleDeleteClick(scope.row)" type="text" size="small" icon="el-icon-close">删除</el-button>
-            <el-button @click="handleSoldClick(scope.row.id)" type="text" size="small" icon="el-icon-goods" v-if="scope.row.is_sold==0">
-              <span>出售</span> 
-            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -216,7 +213,7 @@
 <script>
 // import { format, getTime, getDateHM } from '../../../common/js/times'
 // import { getLimiteText } from '../../../common/js/utils'
-import { getResourceUrl,carTypeUrl,categoryShowUrl,carDeleteUrl,carIsShowUrl,carIsFeatureUrl,carSoldUrl,ERR_OK } from '@/api/index'
+import { getResourceUrl,carSoldListUrl,categoryShowUrl,carDeleteUrl,carIsShowUrl,carIsFeatureUrl,carSoldUrl,ERR_OK } from '@/api/index'
 import searchCondition from 'components/searchCondition.vue'
 var conIds = []
 export default {
@@ -283,7 +280,7 @@ export default {
         conditions: conIds.join(','),
         time:JSON.stringify(that.time)
       }
-      var url = carTypeUrl;
+      var url = carSoldListUrl;
       console.log(params,"params")
       this.$axios.post(url,params).then((res)=>{
         var result = res.data;
@@ -466,42 +463,30 @@ export default {
         }); 
       });
     },
-    handleSoldClick(id) {
-      var that = this;
-      this.$confirm('此操作将把此条信息设置成出售状态, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        var ids = []
-        ids.push(id)
-        var params = {
-          store_id: that.store_id,
-          car_id: JSON.stringify(ids),
+    soldChange() {
+      console.log(value,'--value--')
+      console.log(id,'--id--')
+      let that = this;
+      var ids = []
+      ids.push(id)
+      var params = {
+        store_id: that.store_id,
+        car_id: JSON.stringify(ids),
+        is_show: value?0:1
+      }
+      var url = carSoldUrl;
+      console.log(params,'--params--')
+      that.$axios.post(url,params).then((res)=>{
+        var result = res.data;
+        console.log(result.status_code,'--res.status_code--')
+        if(result.status_code == ERR_OK){
+          console.log(result)
         }
-        var url = carSoldUrl;
-        console.log(params,'--params--')
-        that.$axios.post(url,params).then((res)=>{
-          var result = res.data;
-          console.log(result.status_code,'--res.status_code--')
-          if(result.status_code == ERR_OK){
-            console.log(result)
-            this.$message({
-              type: 'success',
-              message: '设置成功'
-            });
-          }
-        }).catch((err)=>{
-          that.$message({
-            type: 'info',
-            message: '系统出错了'
-          }); 
-        });
-      }).catch(() => {
-        this.$message({
+      }).catch((err)=>{
+        that.$message({
           type: 'info',
-          message: '已取消'
-        });          
+          message: '系统出错了'
+        }); 
       });
     },
     handleMoreCommand(command) {

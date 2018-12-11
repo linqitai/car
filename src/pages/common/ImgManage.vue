@@ -76,7 +76,7 @@ $marignLen:14px;
       }
       .bodyRight{
         float: right;
-        width: 770px;
+        width: 776px;
         height: 100%;
         box-sizing: border-box;
         .rightHeader{
@@ -120,7 +120,7 @@ $marignLen:14px;
           img{margin-left: 50%;margin-top: 50%;transform: translate(-50%,-50%);}
         }
         .upload-imgs{font-size: 0; overflow: hidden;clear: both;padding-top: 12px;height: 490px;
-          li{position: relative;width: 118px;height: 118px;font-size: 14px;display: inline-block;padding: 1px;margin-right: 5px;text-align: center;vertical-align: middle;
+          li{position: relative;width: 118px;height: 118px;font-size: 14px;display: inline-block;padding: 1px;text-align: center;vertical-align: middle;
             margin-bottom: 3px;margin-right: 3px;
             &:hover{border-color: #c7c7c7;
             }

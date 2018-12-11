@@ -20,6 +20,15 @@ import Cookies from 'js-cookie'
 Vue.prototype.$axios = Axios;
 Vue.prototype.$cookie = Cookies;
 Vue.prototype.HOST='/api'
+
+import AMap from 'vue-amap'
+AMap.initAMapApiLoader({
+  key: 'f74ac94ad8e172979ca2ebd2899548c8',
+  plugin: ['AMap.Autocomplete', 'AMap.PlaceSearch', 'AMap.Scale', 'AMap.OverView', 'AMap.ToolBar', 'AMap.MapType', 'AMap.PolyEditor', 'AMap.CircleEditor'],
+  v: '1.4.4'
+});
+
+Vue.use(AMap);
  
 //配置全局的axios默认值（可选）
  

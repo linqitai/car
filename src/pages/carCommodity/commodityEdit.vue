@@ -50,36 +50,6 @@ $marignLen:14px;
   }
   .contentBox{
     padding: 16px 24px;
-    .lineBox{ 
-      display: flex;
-      align-items: center;
-      margin-top:10px;
-      .icon{
-        flex: 0 0 10px;
-        color: red; 
-        font-size: 18px;
-        height: 18px;
-        line-height: 24px;
-      }
-      .text{
-        flex: 0 0 60px;
-        color: #646464;
-      }
-      .inputTitle{
-        flex: 0 0 300px;
-      }
-      .inputTitle2{
-        flex: 0 0 auto;
-        margin-left: 3px;
-      }
-      .upload-demo{
-        margin-left: 0px;
-      }
-      .danwei{
-        flex: 0 0 160px;
-        margin-left: 12px;
-      }
-    }
   }
 }
 
@@ -102,7 +72,7 @@ $marignLen:14px;
   top: 50%;
   transform: translate(-50%,-50%);
   z-index: 1002;
-  width: 1010px;
+  width: 1016px;
   height: 700px;
   background-color: #fff;
   overflow: hidden;
@@ -185,7 +155,7 @@ $marignLen:14px;
     }
     .bodyRight{
       float: right;
-      width: 770px;
+      width: 776px;
       height: 100%;
       box-sizing: border-box;
       .rightHeader{
@@ -305,8 +275,10 @@ $marignLen:14px;
                 </li>
               </ul>
               <div class="tableBottom" v-show="showPageTag">
-                <el-pagination class="pagination" @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="pageIndex" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total">
-                </el-pagination>
+                <!-- <el-pagination class="pagination" @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="pageIndex" :page-size="pageSize" layout="sizes, prev, pager, next, jumper" :total="total">
+                </el-pagination> -->                
+                <el-button type="primary" icon="el-icon-arrow-left" circle :disabled="disabled1" @click="lastPage"></el-button>
+                <el-button type="primary" icon="el-icon-arrow-right" circle :disabled="disabled2" @click="nextPage"></el-button>
               </div>
             </div>
           </div>
@@ -620,7 +592,7 @@ $marignLen:14px;
   </div>
 </template>
 <script>
-  import axios from 'axios';
+  // import axios from 'axios';
   import { getResourceUrl,carAddEditUrl,carShowUrl,getImageUrl,uploadUrl,getGroupsUrl,addGroupsUrl,deleteGroupsUrl,movePicToGroupUrl,ERR_OK } from '@/api/index'
 // var imgArr = new Array();
 var ids = new Array();
@@ -635,6 +607,8 @@ export default {
       pageSize: 23,
       total: 100,
       showPageTag: true,
+      disabled1:true,
+      disabled2:false,
       checkonclicknode:true,
       moveTo: '',
       formLabelWidth: '200px',
@@ -719,8 +693,7 @@ export default {
     // this.$cookie.set('active',1)
     this.active = 1;
     this.setActive();
-    this.id = this.$route.query.id;
-    console.log(this.$route.query.id,"------------id---------------");
+    this.id = this.$cookie.get("_carId");
     if(this.$route.query.from=='edit'){
       this.getCarInfo();
     }
@@ -803,6 +776,20 @@ export default {
       this.pageIndex = val;
       this.getPicInfo()
     },
+    lastPage(){
+      this.pageIndex = this.pageIndex - 1;
+      if(this.pageIndex==1){
+        this.disabled1 = true;
+      }
+      this.getPicInfo()
+    },
+    nextPage(){
+      this.pageIndex = this.pageIndex + 1;
+      if(this.pageIndex>1){
+        this.disabled1 = false;
+      }
+      this.getPicInfo()
+    },
     getGroups() {
       let that = this;
       var params = {
@@ -810,7 +797,7 @@ export default {
       }
       var url = getGroupsUrl;
       
-      axios.post(url,params).then((res)=>{
+      this.$axios.post(url,params).then((res)=>{
         var result = res.data;
         console.log(result.status_code,'--res.status_code--')
         if(result.status_code == ERR_OK){
@@ -826,6 +813,7 @@ export default {
       params.append('store_id', that.store_id)
       params.append('group_id', that.group_id||0)
       var url = uploadUrl;
+      console.log(params,"========params==========")
       $.ajax({ 
         url : url, 
         type : 'POST', 
@@ -892,7 +880,7 @@ export default {
       var params = {
         store_id: this.store_id,
         group_id: this.group_id,
-        offset: 0,
+        offset:  (that.pageIndex-1)*that.pageSize,
         limit: this.pageSize 
       }
       var url = getImageUrl;
@@ -902,11 +890,18 @@ export default {
         if(result.status_code == ERR_OK){
           that.imgs = result.data.images;
           // console.log(that.imgs,'--img--')
-          that.total = 20;
+          that.total = result.data.offset;
           if(that.total<that.pageSize) {
             that.showPageTag = false;
           }else{
             that.showPageTag = true;
+          }
+          var is_end = result.data.is_end;
+          console.log(is_end,"isEnd")
+          if(is_end == 0){
+            that.disabled2 = false
+          }else{
+            that.disabled2 = true
           }
         }
       })
@@ -919,8 +914,12 @@ export default {
       }).then(() => {
         this.$message({
           type: 'success',
-          message: '删除成功!'
+          message: '接口无效!'
         });
+        // this.$message({
+        //   type: 'success',
+        //   message: '删除成功!'
+        // });
       }).catch(() => {
         this.$message({
           type: 'info',

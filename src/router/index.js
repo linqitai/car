@@ -75,6 +75,15 @@ export default new Router({
           }
        },
        {
+          path: '/sold',
+          name: '已出售列表',
+          component: (resolve) => {
+            import('../pages/carCommodity/sold').then((module) => {
+              resolve(module)
+            })
+          }
+        },
+       {
           path: '/commodityEdit',
           name: '汽车商品编辑',
           component: (resolve) => {
@@ -124,6 +133,15 @@ export default new Router({
           name: '门店列表',
           component: (resolve) => {
             import('../pages/store/manage/list').then((module) => {
+              resolve(module)
+            })
+          }
+        },
+        {
+          path: '/storeEdit',
+          name: '门店列表',
+          component: (resolve) => {
+            import('../pages/store/manage/edit').then((module) => {
               resolve(module)
             })
           }

@@ -111,3 +111,21 @@ export const carIsShowUrl = host + '/api/caradmin/car-isshow';
 
 // 车型是否首页
 export const carIsFeatureUrl = host + '/api/caradmin/car-feature'; 
+
+// 单个门店信息
+export const shopInfoUrl = host + '/api/caradmin/shop-info'; 
+
+// 门店编辑
+export const saveShopEdiUrl = host + '/api/caradmin/shop-edit'; 
+
+// 门店删除
+export const shopDeleteEdiUrl = host + '/api/caradmin/shop-delete'; 
+
+// 设置默认门店
+export const shopDefaultEdiUrl = host + '/api/caradmin/shop-default'; 
+
+// 改为已卖出
+export const carSoldUrl = host + '/api/caradmin/car-sold'; 
+
+// 已出售列表
+export const carSoldListUrl = host + '/api/caradmin/car-soldlist'; 

@@ -72,13 +72,13 @@
           prop="created_at"
           label="日期"
           sortable
-          width="120">
-          <template slot-scope="scope">{{ scope.row.created_at | getDate }}</template>
+          width="180">
+          <!-- <template slot-scope="scope">{{ scope.row.created_at | getDate }}</template> -->
         </el-table-column>
         <el-table-column
           prop="user.nickname"
           label="姓名"
-          width="180">
+          width="140">
         </el-table-column>
         <el-table-column
           prop="mobile"
